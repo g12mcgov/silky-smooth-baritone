@@ -71,10 +71,14 @@ $(function() {
         $('#user_count').text(data.count);
     }
 
+    function escape_tags(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
     // Event Handlers
     chatForm.submit(function(event) {
         event.preventDefault();
-        var msg = msgInput.val();
+        var msg = escape_tags(msgInput.val());
         addChat({nickname:'me', message: msg});
         socket.emit('text', msg);
 
