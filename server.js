@@ -54,12 +54,22 @@ io.sockets.on('connection', function(socket) {
     // Messages
     socket.on('text', function(msg) {
         socket.get('nickname', function(err, name) {
+            msg = escape_tags(msg);
             socket.broadcast.emit('text', {nickname: name, message: msg});
         });
     });
 
 
 });
+
+/** 
+ * Utility Functions
+ */
+
+function escape_tags(str) {
+    // Question- does this add too much overhead?
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 
 /**
  * Listen
