@@ -54,7 +54,7 @@ io.sockets.on('connection', function(socket) {
     // Messages
     socket.on('text', function(msg) {
         socket.get('nickname', function(err, name) {
-            socket.broadcast.emit('text', {nickname: socket.nickname, message: msg});
+            socket.broadcast.emit('text', {nickname: name, message: msg});
         });
     });
 

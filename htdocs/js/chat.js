@@ -8,6 +8,8 @@ $(function() {
     var socket   = io.connect();
     var msgInput = $('#msgInput');
     var chatForm = $('#chatForm');
+    var messageList = $('#messages');
+    var userList    = $('#users');
     var nickname;
 
     // Socket Handlers
@@ -25,26 +27,18 @@ $(function() {
         socket.emit('join', getNickname());
 
         // Show the chat
-        $('#content').toggleClass('hide');
+        $('.hideblock').fadeOut('slow');
+
+        // Finally, set chat bar to focus:
+        msgInput.focus();
     });
 
     socket.on('announcement', function(msg) {
-        var li = $('<li></li>');
-        li.addClass('announcement');
-        li.html(msg);
-        $('#messages').append(li);
+        addMessage(msg, 'announcement');
     });
 
-    socket.on('text', addMessage);
-
-    socket.on('user_connected', function(data) {
-        var li = $('<li></li>');
-        li.addClass('user');
-        li.attr('id', data.nickname);
-        li.html(data.nickname);
-        $('#users').append(li);
-        $('#user_count').text(data.count);
-    });
+    socket.on('text', addChat);
+    socket.on('user_connected', addUser);
 
     socket.on('user_disconnected', function(data) {
         $('#' + data.nickname).remove();
@@ -52,18 +46,36 @@ $(function() {
     });
 
     // Utility Functions
-    function addMessage(data) {
+    function addMessage(messageHtml, messageClass) {
+        messageClass = messageClass || 'chat-message';
         var li = $('<li></li>');
-        li.addClass('message');
-        li.html('<strong>' + data.nickname  + '</strong>: ' + data.message);
-        $('#messages').append(li);
+        li.addClass(messageClass);
+        li.html(messageHtml);
+        messageList.append(li);
+
+        // Ensure that autoscrolling is ocurring
+        messageList.scrollTop(messageList[0].scrollHeight);
+    }
+
+    function addChat(data) {
+        var msg = "<strong>" + data.nickname + '</strong>: ' + data.message;
+        addMessage(msg);
+    }
+
+    function addUser(data) {
+        var li = $('<li></li>');
+        li.addClass('user');
+        li.attr('id', data.nickname);
+        li.html('<i class="icon-user"></i> '+ data.nickname);
+        userList.append(li);
+        $('#user_count').text(data.count);
     }
 
     // Event Handlers
     chatForm.submit(function(event) {
         event.preventDefault();
         var msg = msgInput.val();
-        addMessage('me', msg);
+        addChat({nickname:'me', message: msg});
         socket.emit('text', msg);
 
         msgInput.val('');

@@ -8,30 +8,48 @@
     <meta name="description" content="A web sockets based chat app">
     <meta name="viewport" content="width=device-width">
 
+    <link rel="shortcut icon" href="/favicon.png">
+
     <!-- Stylesheets: implied media=all -->
     <link rel="stylesheet" href="/css/bootstrap.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
+    <div class="colorbar"></div>
+
+    <div class="hideblock"></div>
+
     <div class="container">
-        <div id="content" class="row hide">
-            <div id="status" class="span4">
-                <ul class="unstyled" id="users">
-                </ul>
+        <div id="content">
+            <div class="page-header">
+                <h1>The Chat</h1>
             </div>
-            <div id="chat" class="span8">
-                <p><span id="user_count">0</span> Users Connected</p>
-                <ul class="unstyled" id="messages">
-                </ul>
-                <form id="chatForm" class="form-inline" method="" action="">
-                    <div class="input-append">
-                        <input type="text" class="input-xlarge" id="msgInput" />
-                        <button class="btn" type="submit">Send</button>
-                    </div>
-                </form>
+            <div class="row-fluid">
+                <div id="status" class="span4">
+                    <p><span id="user_count">0</span> Users Connected</p>
+                    <ul class="unstyled" id="users">
+                    </ul>
+                </div>
+                <div id="chat" class="span8">
+                    <ul class="unstyled" id="messages">
+                    </ul>
+                    <form id="chatForm" class="form-inline" method="" action="">
+                        <div class="controls controls-row">
+                            <div class="input-append">
+                                <input type="text" class="input-block-level" id="msgInput" />
+                                <button class="btn" type="submit"><i class="icon-comment"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
+
+        <footer>
+            <!-- Stick your Twitter handles here! -->
+            <p>Maintained by <a href="https://twitter.com/bbengfort">@bbengfort</a>, <a href="https://twitter.com/leec85">@leec85</a>, and <a href="https://twitter.com/swededeamon">@swededeamon</a><p>
+        </footer>
     </div>
 
     <!-- Javascript at the bottom of the page for faster loading -->
