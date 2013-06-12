@@ -1,1 +1,5 @@
 /* Custom stylesheet for Chat app */
+
+#content {
+    margin-top: 40px;
+}

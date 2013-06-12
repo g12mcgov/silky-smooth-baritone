@@ -13,6 +13,7 @@ var sockio  = require('socket.io');
 var app = express();
 var server = http.createServer(app);
 var io = sockio.listen(server);
+var count = 0;
 
 /**
  * App Configuration
@@ -27,16 +28,36 @@ app.use(express.static('htdocs'));
 
 io.sockets.on('connection', function(socket) {
 
-    // Chat Joining
+    // User Joining
     socket.on('join', function(name) {
-        socket.nickname = name;
-        socket.broadcast.emit('announcement', name + ' joined the chat.');
+        count++;
+        socket.set('nickname', name, function() {
+            socket.broadcast.emit('announcement', name + ' joined the chat.');
+            socket.broadcast.emit('user_connected', {nickname: name, count: count});
+            for (var sid in io.sockets.sockets) {
+                io.sockets.sockets[sid].get('nickname', function(err, name) {
+                    socket.emit('user_connected', {nickname: name, count: count});
+                });
+            }
+        });
+    });
+
+    // User Disconnecting
+    socket.on('disconnect', function() {
+        count--;
+        socket.get('nickname', function(err, name) {
+            socket.broadcast.emit('announcement', name + ' left the chat.');
+            io.sockets.emit('user_disconnected', {nickname: name, count:count});
+        });
     });
 
     // Messages
     socket.on('text', function(msg) {
-        socket.broadcast.emit('text', socket.nickname, msg);
+        socket.get('nickname', function(err, name) {
+            socket.broadcast.emit('text', {nickname: socket.nickname, message: msg});
+        });
     });
+
 
 });
 

@@ -8,14 +8,24 @@ $(function() {
     var socket   = io.connect();
     var msgInput = $('#msgInput');
     var chatForm = $('#chatForm');
+    var nickname;
 
     // Socket Handlers
     socket.on('connect', function() {
+
+        function getNickname() {
+            nickname = prompt('Enter a chat name:');
+            if (!nickname) {
+                nickname = getNickname();
+            }
+            return nickname;
+        }
+
         // Send a join event with your name.
-        socket.emit('join', prompt('What is your nickname?'));
+        socket.emit('join', getNickname());
 
         // Show the chat
-        $('#chat').toggle();
+        $('#content').toggleClass('hide');
     });
 
     socket.on('announcement', function(msg) {
@@ -27,11 +37,25 @@ $(function() {
 
     socket.on('text', addMessage);
 
+    socket.on('user_connected', function(data) {
+        var li = $('<li></li>');
+        li.addClass('user');
+        li.attr('id', data.nickname);
+        li.html(data.nickname);
+        $('#users').append(li);
+        $('#user_count').text(data.count);
+    });
+
+    socket.on('user_disconnected', function(data) {
+        $('#' + data.nickname).remove();
+        $('#user_count').text(data.count);
+    });
+
     // Utility Functions
-    function addMessage(from, text) {
+    function addMessage(data) {
         var li = $('<li></li>');
         li.addClass('message');
-        li.html('<strong>' + from  + '</strong>: ' + text);
+        li.html('<strong>' + data.nickname  + '</strong>: ' + data.message);
         $('#messages').append(li);
     }
 
